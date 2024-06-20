@@ -27,17 +27,26 @@ with open(file_path, 'rb') as f:
 # Initialize Streamlit
 st.set_page_config(page_title="Chat!강록", page_icon=":cook:", layout="wide")
 
-# 시니어 모드 상태 관리if 'senior_mode' not in st.session_state:
-st.session_state.senior_mode = False
+# Button to enable senior mode
+if 'senior_mode' not in st.session_state:
+    st.session_state['senior_mode'] = False
 
-# 시니어 모드 버튼if st.button('시니어 모드'):
-st.session_state.senior_mode = not st.session_state.senior_mode
+def toggle_senior_mode():
+    st.session_state['senior_mode'] = not st.session_state['senior_mode']
 
-# 텍스트 스타일 설정
-text_style = "font-size: 20px;" if st.session_state.senior_mode else "font-size: 14px;"
+st.button('시니어 모드 켜기' if not st.session_state['senior_mode'] else '시니어 모드 끄기', on_click=toggle_senior_mode)
+
+if st.session_state['senior_mode']:
+    st.markdown("""
+        <style>
+        body, h1, h2, h3, h4, h5, h6, p, span, div, input, button {
+            font-size: 40px !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
 # Main content
-st.markdown(f"<span style='color:lightgray; font-style:italic; {text_style}'>FINAL PROJECT(3조) '조이름은 최강록으로 하겠습니다. 그런데 이제 바질을 곁들인' </span>", unsafe_allow_html=True)
+st.markdown("<span style='color:lightgray; font-style:italic; font-size:12px;'>FINAL PROJECT(3조) '조이름은 최강록으로 하겠습니다. 그런데 이제 바질을 곁들인' </span>", unsafe_allow_html=True)
 curr_dir = os.getcwd()
 img_path = os.path.join(curr_dir, "chat강록1-1.jpg")
 image1 = Image.open(img_path)
@@ -46,7 +55,8 @@ img_path = os.path.join(curr_dir, "chat강록1-2.jpg")
 image2 = Image.open(img_path)
 st.image(image2)
 
-st.markdown(f':loudspeaker: <span style="font-weight: bold; {text_style} font-style: italic;"> 현재 페이지는 사전정보 입력 페이지입니다.</span>', unsafe_allow_html=True)
+st.markdown(':loudspeaker: <span style="font-weight: bold; font-size: 14px; font-style: italic;"> 현재 페이지는 사전정보 입력 페이지입니다.</span>', unsafe_allow_html=True)
+
 
 # 알레르기 항목 리스트
 allergies = {
@@ -70,13 +80,13 @@ health_conditions = ['비만', '당뇨']
 genders = ['남성', '여성']
 
 # 사전 데이터프레임에 '건강상태' 열 추가 (예시 데이터 사용)# 실제 데이터에는 적절한 값을 추가해야 합니다.if '건강상태' not in data.columns:
-data['건강상태'] = '일반'  # 기본값으로 '일반'을 추가
+data['질병'] = '일반'  # 기본값으로 '일반'을 추가
 
 # 페이지 구성
 st.write('\n')
 st.write('\n')
 with st.expander(f'###### Q1. 알레르기가 있으신가요?', expanded=True):
-    st.markdown(f'<span style="color: blue; {text_style}"> Q1-1. 체크박스로 입력하기</span>', unsafe_allow_html=True)
+    st.markdown('<span style="color: blue;"> Q1-1. 체크박스로 입력하기</span>', unsafe_allow_html=True)
     
     cols = st.columns(2)
     selected_allergies = []
@@ -91,14 +101,14 @@ with st.expander(f'###### Q1. 알레르기가 있으신가요?', expanded=True):
 
     st.write("\n")
     st.write("\n")
-    st.markdown(f'<span style="color: blue; {text_style}"> Q1-2. 직접 입력하기  ex) 복숭아, 수박 등</span>', unsafe_allow_html=True)
+    st.markdown('<span style="color: blue;"> Q1-2. 직접 입력하기  ex) 복숭아, 수박 등</span>', unsafe_allow_html=True)
     other_input = st.text_input(' ', key='other_input')
 
     st.write('\n')
-    st.write(f'###### ⬇️ 선택하신 알레르기 항목', unsafe_allow_html=True)
+    st.write('###### ⬇️ 선택하신 알레르기 항목')
     selected_allergies = [allergy for allergy in allergies if st.session_state.get(allergy)]
     if len(selected_allergies) == 0 and not other_input:
-        st.write('알레르기가 없습니다.', unsafe_allow_html=True)
+        st.write('알레르기가 없습니다.')
     else:
         allergy_list = ", ".join(selected_allergies)
         if other_input:
@@ -119,8 +129,8 @@ with st.expander(f'###### Q1. 알레르기가 있으신가요?', expanded=True):
     else:
         df_al = data
 
-with st.expander(" 알레르기 정보 확인하기", expanded=True):
-        st.markdown(f"<p style='color:red; {text_style}'> (일부 항목만 해당할 경우, 해당 항목을 직접 입력해주세요.)</p>", unsafe_allow_html=True)
+with st.expander(" 알레르기 정보 확인하기"):
+        st.markdown("<p style='color:red'> (일부 항목만 해당할 경우, 해당 항목을 직접 입력해주세요.)</p>", unsafe_allow_html=True)
         data = [
         ["체크 항목", "포함된 항목"],
         ['우유', '우유, 치즈, 버터, 크림, 요거트, 아이스크림'],
@@ -138,15 +148,15 @@ with st.expander(" 알레르기 정보 확인하기", expanded=True):
         st.write(al_data, unsafe_allow_html=True)
 
 # 건강 상태 입력
-with st.expander(f'###### Q2. 건강 상태를 선택해주세요.', expanded=True):
+with st.expander('###### Q2. 건강 상태를 선택해주세요.'):
     selected_conditions = st.multiselect('건강 상태를 선택해주세요.', health_conditions)
 
 # 연령 입력
-with st.expander(f'###### Q3. 연령을 입력해주세요.', expanded=True):
+with st.expander('###### Q3. 연령을 입력해주세요.'):
     age = st.number_input('연령을 입력해주세요.', min_value=0, max_value=120, step=1)
 
 # 성별 입력
-with st.expander(f'###### Q4. 성별을 선택해주세요.', expanded=True):
+with st.expander('###### Q4. 성별을 선택해주세요.'):
     gender = st.selectbox('성별을 선택해주세요.', genders)
 
 # 요리 범주 선택
@@ -155,7 +165,7 @@ menus = ['전체', '초대요리', '한식', '간식', '양식', '밑반찬', '�
         '일식', '중식', '퓨전', '분식', '안주', '베이킹', '다이어트', 
         '도시락', '키토', '오븐 요리', '메인요리', '간단요리']
 
-with st.expander(f'###### Q5. 원하는 요리 범주가 있으신가요?', expanded=True):
+with st.expander('###### Q5. 원하는 요리 범주가 있으신가요?'):
     cols = st.columns(4)
     selected_menus = []
     for i, menu in enumerate(menus):
@@ -172,7 +182,7 @@ with st.expander(f'###### Q5. 원하는 요리 범주가 있으신가요?', expa
 
 # 요리 난이도 선택
 st.write('\n')
-with st.expander(f'###### Q6. 원하는 요리 난이도가 있으신가요?', expanded=True):
+with st.expander('###### Q6. 원하는 요리 난이도가 있으신가요?'):
     levels = st.multiselect('원하시는 난이도를 선택해주세요.', ['초보자', '중급자', '고급자'])
 
     if levels:
@@ -184,7 +194,7 @@ with st.expander(f'###### Q6. 원하는 요리 난이도가 있으신가요?', e
 
 # 희망 요리시간 입력
 st.write('\n')
-with st.expander(f"###### Q7. 희망하는 요리시간이 있으신가요?", expanded=True):
+with st.expander("###### Q7. 희망하는 요리시간이 있으신가요?"):
     time = st.text_input('희망하는 최대 소요시간을 입력해주세요. ex) 120 (분 단위 숫자로 입력)')
     last_df = filtered_df.copy()
 
@@ -205,7 +215,7 @@ if st.button(label='저장'):
         pickle.dump(last_df, f)
     st.write('저장되었습니다.')
 
-st.markdown(f'<span style="color: red; font-weight: bold; {text_style} font-style: italic;"> "저장" 버튼을 눌러야 정보가 저장됩니다.</span>', unsafe_allow_html=True)
+st.markdown("<p style='color:red'> (일부 항목만 해당할 경우, 해당 항목을 직접 입력해주세요.)</p>", unsafe_allow_html=True)
 
 # ChatGPT 메시지 프롬프트
 msg_prompt = {
@@ -304,8 +314,7 @@ def user_interact(query, model, msg_prompt_init):
         return f'"{r_set_n}" 요리방법을 알려드릴게요! \n\n {re_num}'
 
 if __name__ == "__main__":
-    st.markdown(f"<span style='color:lightgray; font-style:italic; {text_style}'>FINAL PROJECT(3조) '조이름은 최강록으로 하겠습니다. 그런데 이제 바질을 곁들인' </span>", unsafe_allow_html=True)
-    curr_dir = os.getcwd()
+    st.markdown("<span style='color:lightgray; font-style:italic;'>FINAL PROJECT(3조) '조이름은 최강록으로 하겠습니다. 그런데 이제 바질을 곁들인' </span>", unsafe_allow_html=True)
     img_path = os.path.join(curr_dir, "chat강록2-1.jpg")
     image = Image.open(img_path)
     st.image(image)
