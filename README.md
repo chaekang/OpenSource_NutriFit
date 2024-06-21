@@ -59,3 +59,6 @@
 - 아나콘다 설치
 - 아나콘다 프롬프트 실행
 - 디렉토리 내로 이동 -> Chat 폴더로 이동 -> streamlit run Chat!강록.py
+
+## 출처
+깃허브 kseob758/recipe-recommendation-chatbot(https://github.com/kseob758/recipe-recommendation-chatbot)의 코드를 기반으로 수정하여 만듦
